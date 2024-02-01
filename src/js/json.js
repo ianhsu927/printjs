@@ -3,22 +3,22 @@ import Print from './print'
 
 export default {
   print: (params, printFrame) => {
-    // Check if we received proper data
+    // 验证数据
     if (typeof params.printable !== 'object') {
       throw new Error('Invalid javascript data object (JSON).')
     }
 
-    // Validate repeatTableHeader
+    // 验证 repeatTableHeader 参数
     if (typeof params.repeatTableHeader !== 'boolean') {
       throw new Error('Invalid value for repeatTableHeader attribute (JSON).')
     }
 
-    // Validate properties
+    // 验证 properties
     if (!params.properties || !Array.isArray(params.properties)) {
       throw new Error('Invalid properties array for your JSON data.')
     }
 
-    // We will format the property objects to keep the JSON api compatible with older releases
+    // 格式化属性对象以保持 JSON api 与旧版本兼容
     params.properties = params.properties.map(property => {
       return {
         field: typeof property === 'object' ? property.field : property,
@@ -27,69 +27,69 @@ export default {
       }
     })
 
-    // Create a print container element
+    // 创建打印元素容器
     params.printableElement = document.createElement('div')
 
-    // Check if we are adding a print header
+    // 检查是否正在添加打印头
     if (params.header) {
       addHeader(params.printableElement, params)
     }
 
-    // Build the printable html data
+    // 构建 printable html 数据
     params.printableElement.innerHTML += jsonToHTML(params)
 
-    // Check if we are adding a print footer
+    // 检查是否正在添加打印尾部
     if (params.footer) {
       addFooter(params.printableElement, params)
     }
 
-    // Print the json data
+    // 打印 JSON 数据
     Print.send(params, printFrame)
   }
 }
 
-function jsonToHTML (params) {
-  // Get the row and column data
+function jsonToHTML(params) {
+  // 获得行和列数据
   const data = params.printable
   const properties = params.properties
 
-  // Create a html table
+  // 创建 html table
   let htmlData = '<table style="border-collapse: collapse; width: 100%;">'
 
-  // Check if the header should be repeated
+  // 检查是否应该重复 header
   if (params.repeatTableHeader) {
     htmlData += '<thead>'
   }
 
-  // Add the table header row
+  // 添加表头行
   htmlData += '<tr>'
 
-  // Add the table header columns
+  // 添加表头列
   for (let a = 0; a < properties.length; a++) {
     htmlData += '<th style="width:' + properties[a].columnSize + ';' + params.gridHeaderStyle + '">' + capitalizePrint(properties[a].displayName) + '</th>'
   }
 
-  // Add the closing tag for the table header row
+  // 添加表头行的结束标签
   htmlData += '</tr>'
 
-  // If the table header is marked as repeated, add the closing tag
+  // 如果表头标记为重复，则添加关闭标记
   if (params.repeatTableHeader) {
     htmlData += '</thead>'
   }
 
-  // Create the table body
+  // 创建表格 body
   htmlData += '<tbody>'
 
-  // Add the table data rows
+  // 添加表格数据行
   for (let i = 0; i < data.length; i++) {
-    // Add the row starting tag
+    // 添加行开始标签
     htmlData += '<tr>'
 
-    // Print selected properties only
+    // 仅打印选定的属性
     for (let n = 0; n < properties.length; n++) {
       let stringData = data[i]
 
-      // Support nested objects
+      // 支持嵌套对象
       const property = properties[n].field.split('.')
       if (property.length > 1) {
         for (let p = 0; p < property.length; p++) {
@@ -99,15 +99,15 @@ function jsonToHTML (params) {
         stringData = stringData[properties[n].field]
       }
 
-      // Add the row contents and styles
+      // 添加行内容和样式
       htmlData += '<td style="width:' + properties[n].columnSize + params.gridStyle + '">' + stringData + '</td>'
     }
 
-    // Add the row closing tag
+    // 添加行结束标签
     htmlData += '</tr>'
   }
 
-  // Add the table and body closing tags
+  // 添加表格和 body 结束标签
   htmlData += '</tbody></table>'
 
   return htmlData

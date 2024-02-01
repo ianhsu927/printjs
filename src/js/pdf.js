@@ -51,8 +51,7 @@ export default {
 }
 
 function createBlobAndPrint(params, printFrame, data) {
-    // 通过响应获得 base64 数据到一个 blob 并创建一个本地对象 url
-    // blob -->> binary large object
+    // 通过响应获得 base64 数据到一个 blob(binary large object) 并创建一个本地对象 url
     let localPdf = new window.Blob([data], { type: 'application/pdf' })
     localPdf = window.URL.createObjectURL(localPdf)
 

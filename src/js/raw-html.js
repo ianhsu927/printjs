@@ -3,24 +3,24 @@ import { addHeader, addFooter } from './functions'
 
 export default {
   print: (params, printFrame) => {
-    // Create printable element (container)
+    // 创建 printable 元素(容器)
     params.printableElement = document.createElement('div')
     params.printableElement.setAttribute('style', 'width:100%')
 
-    // Set our raw html as the printable element inner html content
+    // 设置原始 html 为 printable 元素的 inner html 内容
     params.printableElement.innerHTML = params.printable
 
-    // Add header
+    // 添加 header
     if (params.header) {
       addHeader(params.printableElement, params)
     }
 
-    // Add footer
+    // 添加 footer
     if (params.footer) {
       addFooter(params.printableElement, params)
     }
 
-    // Print html contents
+    // 打印 HTML 内容
     Print.send(params, printFrame)
   }
 }
