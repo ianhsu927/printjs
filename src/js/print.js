@@ -3,13 +3,13 @@ import { cleanUp } from './functions'
 
 const Print = {
   send: (params, printFrame) => {
-    // Append iframe element to document body
+    // 添加 iframe 元素到 body 中
     document.getElementsByTagName('body')[0].appendChild(printFrame)
 
-    // Get iframe element
+    // 找到 iframe 元素
     const iframeElement = document.getElementById(params.frameId)
 
-    // Wait for iframe to load all content
+    // 等待 iframe 元素加载完成
     iframeElement.onload = () => {
       if (params.type === 'pdf') {
         // Add a delay for Firefox. In my tests, 1000ms was sufficient but 100ms was not
@@ -21,24 +21,24 @@ const Print = {
         return
       }
 
-      // Get iframe element document
+      // 获取 iframe 元素的 document
       let printDocument = (iframeElement.contentWindow || iframeElement.contentDocument)
       if (printDocument.document) printDocument = printDocument.document
 
-      // Append printable element to the iframe body
+      // 添加 printable 元素到 iframe 的 body 中
       printDocument.body.appendChild(params.printableElement)
 
-      // Add custom style
+      // 添加自定义 CSS
       if (params.type !== 'pdf' && params.style) {
-        // Create style element
+        // 创建 style 元素
         const style = document.createElement('style')
         style.innerHTML = params.style
 
-        // Append style element to iframe's head
+        // 添加 style 元素到 iframe 的 head 中
         printDocument.head.appendChild(style)
       }
 
-      // If printing images, wait for them to load inside the iframe
+      // 如果 iframe 中有图片，等待图片加载完成
       const images = printDocument.getElementsByTagName('img')
 
       if (images.length > 0) {
@@ -50,30 +50,30 @@ const Print = {
   }
 }
 
-function performPrint (iframeElement, params) {
+function performPrint(iframeElement, params) {
   try {
     iframeElement.focus()
 
-    // If Edge or IE, try catch with execCommand
+    // 如果是 Edge 或者 IE, 使用 execCommand 进行 try-catch
     if (Browser.isEdge() || Browser.isIE()) {
       try {
         iframeElement.contentWindow.document.execCommand('print', false, null)
       } catch (e) {
-        setTimeout(function(){
+        setTimeout(function () {
           iframeElement.contentWindow.print()
-        },1000)
+        }, 1000)
       }
     } else {
-      // Other browsers
-      setTimeout(function(){
+      // 其他浏览器
+      setTimeout(function () {
         iframeElement.contentWindow.print()
-      },1000)
+      }, 1000)
     }
   } catch (error) {
     params.onError(error)
   } finally {
     if (Browser.isFirefox() && Browser.getFirefoxMajorVersion() < 110) {
-      // Move the iframe element off-screen and make it invisible
+      // 移动 iframe 元素到屏幕外并且隐藏
       iframeElement.style.visibility = 'hidden'
       iframeElement.style.left = '-1px'
     }
@@ -82,7 +82,7 @@ function performPrint (iframeElement, params) {
   }
 }
 
-function loadIframeImages (images) {
+function loadIframeImages(images) {
   const promises = images.map(image => {
     if (image.src && image.src !== window.location.href) {
       return loadIframeImage(image)
@@ -92,7 +92,7 @@ function loadIframeImages (images) {
   return Promise.all(promises)
 }
 
-function loadIframeImage (image) {
+function loadIframeImage(image) {
   return new Promise(resolve => {
     const pollImage = () => {
       !image || typeof image.naturalWidth === 'undefined' || image.naturalWidth === 0 || !image.complete

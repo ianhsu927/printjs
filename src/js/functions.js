@@ -1,45 +1,45 @@
 import Modal from './modal'
 import Browser from './browser'
 
-export function addWrapper (htmlData, params) {
+export function addWrapper(htmlData, params) {
   const bodyStyle = 'font-family:' + params.font + ' !important; font-size: ' + params.font_size + ' !important; width:100%;'
   return '<div style="' + bodyStyle + '">' + htmlData + '</div>'
 }
 
-export function capitalizePrint (obj) {
+export function capitalizePrint(obj) {
   return obj.charAt(0).toUpperCase() + obj.slice(1)
 }
 
-export function collectStyles (element, params) {
+export function collectStyles(element, params) {
   const win = document.defaultView || window
 
-  // String variable to hold styling for each element
+  // 字符串变量存储每个元素的样式
   let elementStyle = ''
 
-  // Loop over computed styles
+  // 循环计算样式
   const styles = win.getComputedStyle(element, '')
 
   for (let key = 0; key < styles.length; key++) {
-    // Check if style should be processed
+    // 检查样式是否应该被处理
     if (params.targetStyles.indexOf('*') !== -1 || params.targetStyle.indexOf(styles[key]) !== -1 || targetStylesMatch(params.targetStyles, styles[key])) {
       if (styles.getPropertyValue(styles[key])) elementStyle += styles[key] + ':' + styles.getPropertyValue(styles[key]) + ';'
     }
   }
 
-  // Print friendly defaults (deprecated)
+  // 打印友好默认值(弃用)
   elementStyle += 'max-width: ' + params.maxWidth + 'px !important; font-size: ' + params.font_size + ' !important;'
 
   return elementStyle
 }
 
-function targetStylesMatch (styles, value) {
+function targetStylesMatch(styles, value) {
   for (let i = 0; i < styles.length; i++) {
     if (typeof value === 'object' && value.indexOf(styles[i]) !== -1) return true
   }
   return false
 }
 
-export function addHeader (printElement, params) {
+export function addHeader(printElement, params) {
   // Create the header container div
   const headerContainer = document.createElement('div')
 
@@ -62,7 +62,7 @@ export function addHeader (printElement, params) {
   printElement.insertBefore(headerContainer, printElement.childNodes[0])
 }
 
-export function addFooter (printElement, params) {
+export function addFooter(printElement, params) {
   // Create the footer container div
   let footerContainer = document.createElement('div')
 
@@ -85,7 +85,7 @@ export function addFooter (printElement, params) {
   printElement.insertBefore(footerContainer, printElement.childNodes.lastChild)
 }
 
-export function cleanUp (params) {
+export function cleanUp(params) {
   // If we are showing a feedback message to user, remove it
   if (params.showModal) Modal.close()
 
@@ -117,7 +117,7 @@ export function cleanUp (params) {
         setTimeout(() => {
           iframe.remove()
         },
-        params.frameRemoveDelay
+          params.frameRemoveDelay
         )
       } else {
         iframe.remove()
@@ -128,7 +128,7 @@ export function cleanUp (params) {
   window.addEventListener(event, handler)
 }
 
-export function isRawHTML (raw) {
+export function isRawHTML(raw) {
   const regexHtml = new RegExp('<([A-Za-z][A-Za-z0-9]*)\\b[^>]*>(.*?)</\\1>')
   return regexHtml.test(raw)
 }
